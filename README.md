@@ -1,6 +1,7 @@
 # Robotic Arm Project
 
- ### Demo can found [here](https://github.com/Aikufurr/RoboitcArm/blob/master/demo.mp4)
+ ### Demo 
+ [![Link to youtube](https://i.ytimg.com/vi/7p28pPmUths/hqdefault.jpg)](https://youtu.be/7p28pPmUths)
 
 ## Part list
 
