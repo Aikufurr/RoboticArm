@@ -1,7 +1,12 @@
+
 # Robotic Arm Project
 
  ### Demo 
- [![Link to youtube](https://i.ytimg.com/vi/7p28pPmUths/hqdefault.jpg)](https://youtu.be/7p28pPmUths)
+[![Link to youtube](https://i.ytimg.com/vi/7p28pPmUths/hqdefault.jpg)](https://youtu.be/7p28pPmUths)
+
+
+### Diagram
+[![Diagram](https://github.com/Aikufurr/RoboitcArm/raw/master/Diagram_image.png)](https://github.com/Aikufurr/RoboitcArm/blob/master/Diagram_source.fzz)
 
 ## Part list
 
