@@ -13,9 +13,9 @@ Adafruit_PWMServoDriver pwm = Adafruit_PWMServoDriver();
 #define SERVOMAD          290    // Max degree of servo
 #define JOYSTICK_MIN      0      // Min input of servo
 #define JOYSTICK_MAX      1021   // Max input of servo
-#define SERVO_MOVE_SPEED  1      // Delay for interpolation
-#define GRIPPER_CLOSED    30     // Degree of closed gripper
-#define GRIPPER_OPEN      90     // Degree of open gripper
+#define SERVO_MOVE_SPEED  10     // Delay for interpolation
+#define GRIPPER_CLOSED    60     // Degree of closed gripper
+#define GRIPPER_OPEN      30     // Degree of open gripper
 
 const int RightJoystickY = A0;   // Arduino UNO pin for Right Joystick Y
 const int RightJoystickX = A1;   // Arduino UNO pin for Right Joystick X
@@ -24,6 +24,9 @@ const int LeftJoystickX = A3;    // Arduino UNO pin for Left Joystick X
 
 const int LeftJoystickButton = 13;  // Arduino UNO pin for Left Joystick Button
 const int RightJoystickButton = 12; // Arduino UNO pin for Right Joystick Button
+
+const int MagnetPin = 11; // Arduino UNO pin for the magnet
+const boolean MagnetUsed = false;
 
 
 // =-=-=-=-=-=-=-=-=
@@ -53,11 +56,11 @@ const int servoGripper = 4;
 boolean gripperActive = false;
 
 void setup() {
-  Serial.begin(9600);                    // Start Debugging 
+  pinMode(MagnetPin, OUTPUT);
   pwm.begin();                           // Start the PWM
   pwm.setOscillatorFrequency(27000000);  // The int.osc. is closer to 27MHz  
   pwm.setPWMFreq(SERVO_FREQ);            // Analog servos run at ~50 Hz updates
-  delay(10);
+  delay(500);
 }
 
 
@@ -111,10 +114,10 @@ void loop() {
   // If the Right Joystick Button is being presses down (LOW) 
   if (digitalRead(RightJoystickButton) == 0 && LeftButtonLast == 1 && millis() - time > debounce) {
     // Set the servos to 90 degrees
-    setAngle(servoBase, 90, LeftJoystickXAngle, 25, false);
-    setAngle(servoShoulder, 90, LeftJoystickYAngle, 25, false);
-    setAngle(servoElbow, 90, RightJoystickYAngle, 25, false);
-    setAngle(servoWrist, 90, RightJoystickXAngle, 25, false);
+    setAngle(servoBase, 90, LeftJoystickXAngle, 25);
+    setAngle(servoShoulder, 90, LeftJoystickYAngle, 25);
+    setAngle(servoElbow, 90, RightJoystickYAngle, 25);
+    setAngle(servoWrist, 90, RightJoystickXAngle, 25);
     // Reset the known positions of the servos to 90 to avoid jumps
     RightJoystickYAngle = 90;
     RightJoystickXAngle = 90;
@@ -131,9 +134,17 @@ void loop() {
 
   // Open / Close the gripper depending on the state
   if (gripperActive) {
-    pwm.setPWM(servoGripper, 0, map(GRIPPER_OPEN, SERVOMID, SERVOMAD, SERVOMIN, SERVOMAX));
+    if (MagnetUsed) {
+      digitalWrite(MagnetPin, HIGH);
+    } else {
+      pwm.setPWM(servoGripper, 0, map(GRIPPER_OPEN, SERVOMID, SERVOMAD, SERVOMIN, SERVOMAX));
+    }
   } else {
-    pwm.setPWM(servoGripper, 0, map(GRIPPER_CLOSED, SERVOMID, SERVOMAD, SERVOMIN, SERVOMAX));
+    if (MagnetUsed){
+      digitalWrite(MagnetPin, LOW);
+    } else {
+      pwm.setPWM(servoGripper, 0, map(GRIPPER_CLOSED, SERVOMID, SERVOMAD, SERVOMIN, SERVOMAX));
+    }
   }
 
   // =-=-=-=-=-=-=-=-=
@@ -143,36 +154,25 @@ void loop() {
   // FUNC  map          Map the input from it's possible min/man to an range of min/max
   // FUNC  contrain     Constrains a number to be within a range.
   // =-=-=-=-=-=-=-=-=
-  RightJoystickYAngle += map(analogRead(RightJoystickY), JOYSTICK_MIN, JOYSTICK_MAX, -1, 1);
+  if ((analogRead(RightJoystickY) > 510) || (analogRead(RightJoystickY) < 500)) {
+    RightJoystickYAngle += map(analogRead(RightJoystickY), JOYSTICK_MIN, JOYSTICK_MAX, -1, 1);
+  }
   RightJoystickYAngle = constrain(RightJoystickYAngle, 0, 180);
-  RightJoystickXAngle += map(analogRead(RightJoystickX), JOYSTICK_MIN, JOYSTICK_MAX, -1, 1);
+
+  if ((analogRead(RightJoystickX) > 510) || (analogRead(RightJoystickX) < 500)) {
+    RightJoystickXAngle += map(analogRead(RightJoystickX), JOYSTICK_MIN, JOYSTICK_MAX, -1, 1);
+  }
   RightJoystickXAngle = constrain(RightJoystickXAngle, 0, 180);
 
-  if ((analogRead(LeftJoystickY) > 510) || (analogRead(LeftJoystickY) < 500)) {
+  if ((analogRead(LeftJoystickY) > 520) || (analogRead(LeftJoystickY) < 490)) {
     LeftJoystickYAngle += map(analogRead(LeftJoystickY), JOYSTICK_MIN, JOYSTICK_MAX, -1, 1);
   } 
-  
   LeftJoystickYAngle = constrain(LeftJoystickYAngle, 0, 180);
-  LeftJoystickXAngle += map(analogRead(LeftJoystickX), JOYSTICK_MIN, JOYSTICK_MAX, -1, 1);
+  
+  if ((analogRead(LeftJoystickX) > 510) || (analogRead(LeftJoystickX) < 500)) {
+    LeftJoystickXAngle += map(analogRead(LeftJoystickX), JOYSTICK_MIN, JOYSTICK_MAX, -1, 1);
+  }
   LeftJoystickXAngle = constrain(LeftJoystickXAngle, 0, 180);
-
-  // =-=-=-=-=-=-=-=-=
-  // Debugging
-  // =-=-=-=-=-=-=-=-=
-
-  Serial.print(LeftJoystickXAngle);
-  Serial.print("\t");
-  Serial.print(LeftJoystickYAngle);
-  Serial.print("\t");
-  Serial.print(RightJoystickYAngle);
-  Serial.print("\t");
-  Serial.print(RightJoystickXAngle);
-  Serial.print("\t");
-  Serial.print(digitalRead(LeftJoystickButton));
-  Serial.print("\t");
-  Serial.print(digitalRead(RightJoystickButton));
-  Serial.print("\t");
-  Serial.println(gripperActive);
 
   // =-=-=-=-=-=-=-=-=
   // FUNC setAngle  Set's the positon of the servos from one degree to another, uses interpolation
