@@ -14,8 +14,8 @@ Adafruit_PWMServoDriver pwm = Adafruit_PWMServoDriver();
 #define JOYSTICK_MIN      0      // Min input of servo
 #define JOYSTICK_MAX      1021   // Max input of servo
 #define SERVO_MOVE_SPEED  10     // Delay for interpolation
-#define GRIPPER_CLOSED    60     // Degree of closed gripper
-#define GRIPPER_OPEN      30     // Degree of open gripper
+#define GRIPPER_CLOSED    90     // Degree of closed gripper - Greater then 0 is more closed, 100 is near max
+#define GRIPPER_OPEN      30     // Degree of open gripper   - Closer to 0 is more open
 
 const int RightJoystickY = A0;   // Arduino UNO pin for Right Joystick Y
 const int RightJoystickX = A1;   // Arduino UNO pin for Right Joystick X
@@ -25,8 +25,8 @@ const int LeftJoystickX = A3;    // Arduino UNO pin for Left Joystick X
 const int LeftJoystickButton = 13;  // Arduino UNO pin for Left Joystick Button
 const int RightJoystickButton = 12; // Arduino UNO pin for Right Joystick Button
 
-const int MagnetPin = 11; // Arduino UNO pin for the magnet
-const boolean MagnetUsed = false;
+const int MagnetPin = 11;          // Arduino UNO pin for the magnet
+const boolean MagnetUsed = false;  // Is the magnet being used  
 
 
 // =-=-=-=-=-=-=-=-=
@@ -56,7 +56,7 @@ const int servoGripper = 4;
 boolean gripperActive = false;
 
 void setup() {
-  pinMode(MagnetPin, OUTPUT);
+  pinMode(MagnetPin, OUTPUT);            // Set the magnet pin to be an output
   pwm.begin();                           // Start the PWM
   pwm.setOscillatorFrequency(27000000);  // The int.osc. is closer to 27MHz  
   pwm.setPWMFreq(SERVO_FREQ);            // Analog servos run at ~50 Hz updates
