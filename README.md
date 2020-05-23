@@ -2,6 +2,7 @@
 # Robotic Arm Project
 
  ### Demo 
+[![Codacy Badge](https://api.codacy.com/project/badge/Grade/1aca98177ddd4ba89e1f4edbe37af7e9)](https://app.codacy.com/manual/Aikufurr/RoboticArm?utm_source=github.com&utm_medium=referral&utm_content=Aikufurr/RoboticArm&utm_campaign=Badge_Grade_Dashboard)
 [![Link to youtube](https://i.ytimg.com/vi/7p28pPmUths/hqdefault.jpg)](https://youtu.be/7p28pPmUths)
 
 
